@@ -12,7 +12,7 @@ var ISBNdbAPI = (function () {
             name: SOURCE_NAME,
             description: 'ISBNdb book database. Requires paid API key.',
             requiresKey: REQUIRES_KEY,
-            keyDescription: 'Required. https://isbndb.com/apidocs/v2',
+           // keyDescription: 'Required. https://isbndb.com/apidocs/v2', Commenting out due to mess up on the UI
             website: 'https://isbndb.com',
             enabled: false
         };
