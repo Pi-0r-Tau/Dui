@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="govuk-template">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISBN to Dewey Decimal - Dui</title>
+  <link rel="stylesheet" href="lookup.css">
+</head>
+<body class="govuk-template__body">
+  <header class="govuk-header" role="banner">
+    <div class="govuk-header__container">
+      <div class="govuk-header__logo">
+        <span class="govuk-header__logotype-text">Dui - ISBN to Dewey Decimal</span>
+      </div>
+      <div class="govuk-header__service-name">
+        *named after Melville Dewey
+      </div>
+    </div>
+  </header>
+
+  <div class="govuk-phase-banner">
+    <div class="govuk-width-container">
+      <div class="govuk-phase-banner__content">
+        <strong class="govuk-tag">Not GOV UK</strong>
+        <span class="govuk-phase-banner__text">
+          This is a mini project to help all librarians.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-width-container">
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+
+      <h1 class="govuk-heading-xl">Enter an ISBN</h1>
+
+      <div class="govuk-card govuk-card--with-border">
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="isbn-input">
+            ISBN number
+          </label>
+          <div class="govuk-hint">
+            Enter a 10 or 13 digit ISBN, or scan a barcode
+          </div>
+          <div class="input-group">
+            <input
+              class="govuk-input"
+              id="isbn-input"
+              name="isbn"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button id="search-btn" class="govuk-button" type="button">
+              Search
+            </button>
+            <button id="clear-btn" class="govuk-button govuk-button--secondary" type="button">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="status-indicator" id="scanner-status">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready for barcode scan</span>
+        </div>
+
+        <details>
+          <summary>Help with scanning</summary>
+          <div>
+            <p class="govuk-body"><strong>Barcode scanner:</strong> Simply scan the ISBN barcode.  The lookup will start automatically.</p>
+            <p class="govuk-body"><strong>Manual entry:</strong> Type the ISBN number and press Enter or click Search. </p>
+          </div>
+        </details>
+      </div>
+
+      <div id="results-section" aria-live="polite"></div>
+
+      <section class="history-section govuk-card govuk-card--with-border" id="history-section">
+        <div class="history-header">
+          <h2 class="govuk-heading-m">Recent lookups</h2>
+          <button id="clear-history-btn" class="govuk-button govuk-button--warning" style="display: none;">
+            Clear history
+          </button>
+        </div>
+
+        <div class="history-list" id="history-list" role="list">
+          <p class="govuk-body empty-history">No recent lookups</p>
+        </div>
+
+        <div class="export-section">
+          <h3 class="govuk-heading-s">Export data</h3>
+          <p class="govuk-hint">Download your lookup history</p>
+          <div class="govuk-button-group">
+            <button id="export-csv-btn" class="govuk-button govuk-button--secondary" type="button" disabled>
+              Export as CSV
+            </button>
+            <button id="export-json-btn" class="govuk-button govuk-button--secondary" type="button" disabled>
+              Export as JSON
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <button id="settings-toggle" class="govuk-button govuk-button--secondary settings-toggle" type="button">
+          API Settings
+        </button>
+
+        <div id="settings-panel" class="settings-panel">
+          <h2 class="govuk-heading-m">API Configuration</h2>
+          <p class="govuk-body">Enable or disable data sources and add API keys for premium services. This is a work in progress and custom API integration may be buggy.</p>
+
+          <div id="api-settings-list"></div>
+
+          <div class="govuk-button-group" style="margin-top: 30px;">
+            <button id="save-settings-btn" class="govuk-button" type="button">
+              Save settings
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="govuk-footer" role="contentinfo">
+    <div class="govuk-width-container">
+      <div class="govuk-footer__meta">
+        <p>Data provided by Open Library, Google Books, and Library of Congress</p>
+        <p style="margin-top: 10px; font-size: 14px;">
+          Version 1.0.0 |
+          <a href="https://github.com/Pi-0r-Tau/Dui" target="_blank" rel="noopener" class="govuk-link" style="color: #1d70b8;">View on GitHub</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="apis/api-base.js"></script>
+  <script src="apis/api-openlibrary.js"></script>
+  <script src="apis/api-googlebooks.js"></script>
+  <script src="apis/api-loc.js"></script>
+  <script src="apis/api-isbndb.js"></script>
+  <script src="settings.js"></script>
+  <script src="export.js"></script>
+  <script src="lookup.js"></script>
+</body>
+</html>
