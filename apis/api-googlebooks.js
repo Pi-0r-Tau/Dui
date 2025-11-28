@@ -19,7 +19,7 @@ var GoogleBooksAPI = (function () {
     function lookup(isbn, isbn13, apiKey) {
         APIBase.log.info(SOURCE_NAME, 'Starting lookup', { isbn: isbn, isbn13: isbn13 });
 
-        var result = APIBase.createEmptyResult(SOURCE_NAME);
+        var result = APIBase.emptyResult(SOURCE_NAME);
 
         var url = BASE_URL + '/volumes?q=isbn:' + isbn13;
         if (apiKey) {
