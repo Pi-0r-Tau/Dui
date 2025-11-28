@@ -4,7 +4,6 @@
 
 A web-based tool for librarians to quickly look up Dewey Decimal Classification (DDC) numbers from ISBN barcodes or manual entry.
 
-This tool is a user interface only. It does not host or store any book data. All book information and Dewey Decimal classifications are retrieved in real-time from third-party library APIs.
 
 ## What is this?
 
@@ -44,3 +43,4 @@ This project:
 - Makes no guarantees about data accuracy all data is provided by the source APIs
 
 Users are responsible for ensuring their usage complies with each API's terms of service.
+This tool is a user interface only. It does not host or store any data. All book information and Dewey Decimal classifications are retrieved in real-time from third-party library APIs.
