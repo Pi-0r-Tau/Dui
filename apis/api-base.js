@@ -127,6 +127,7 @@ var APIBase = (function() {
             title: null,
             author: null,
             deweyDecimal: null,
+            deweySource: null,
             lccNumber: null,
             publisher: null,
             publishDate: null,
