@@ -440,13 +440,47 @@ function buildBookDetailsHtml(result) {
             '<dd class="govuk-summary-list__value book-lcc">' + escapeHtml(result.lccNumber) + '</dd>' +
             '</div>';
     }
+    // TASK 003: Subjects with dropdown
+    if (result.subjects && result.subjects.length > 0) {
+        var cleanedSubjects = cleanSubjects(result.subjects);
+        var initialCount = 5; // first 5 subjects 
+
+        html += '<div class="govuk-summary-list__row">' +
+            '<dt class="govuk-summary-list__key">Subjects</dt>' +
+            '<dd class="govuk-summary-list__value book-subjects">' +
+            '<ul class="govuk-list govuk-list--bullet">';
+
+        var displaySubjects = cleanedSubjects.slice(0, initialCount);
+        for (var i = 0; i < displaySubjects.length; i++) {
+            html += '<li>' + escapeHtml(displaySubjects[i]) + '</li>';
+        }
+
+        html += '</ul>';
+
+        // More than 5 subjects, add dropdown
+        if (cleanedSubjects.length > initialCount) {
+            var remainingSubjects = cleanedSubjects.slice(initialCount);
+
+            html += '<details class="subjects-dropdown">' +
+                '<summary class="govuk-body-s subjects-toggle">' +
+                'Show ' + remainingSubjects.length + ' more subject' + (remainingSubjects.length > 1 ? 's' : '') +
+                '</summary>' +
+                '<ul class="govuk-list govuk-list--bullet" style="margin-top: 10px;">';
+
+            for (var j = 0; j < remainingSubjects.length; j++) {
+                html += '<li>' + escapeHtml(remainingSubjects[j]) + '</li>';
+            }
+            html += '</ul></details>';
+        }
+        html += '</dd></div>';
+    }
 
     html += '</dl>';
 
     if (result.sources && result.sources.length > 0) {
         html += '<div class="sources-list">' +
             '<span class="sources-label">Data from:</span> ' +
-            result.sources.map(function (s) {
+            result.sources.map(function(s) {
                 return getSourceLink(s);
             }).join(' ') +
             '</div>';
@@ -454,6 +488,59 @@ function buildBookDetailsHtml(result) {
 
     html += '</div>';
     return html;
+}
+
+// TASK 003.1: clean subjects, remove dup, technical jargon and make it look nice
+function cleanSubjects(subjects) {
+    if (!subjects || subjects.length === 0) return [];
+    var seen = {};
+    var cleaned = [];
+
+    for (var i = 0; i < subjects.length; i++) {
+        var subject = subjects[i];
+        if (!subject || typeof subject !== 'string') continue;
+        if (subject.indexOf('(OCoLC)') !== -1) continue;
+        if (subject.indexOf('fast ') !== -1) continue;
+        if (subject.match(/^[A-Z]{2,}\d+/)) continue;
+
+        var cleanedSubject = subject
+            .replace(/\s+--\s+/g, ' — ')
+            .replace(/\.$/, '')
+            .trim();
+
+        if (cleanedSubject.length < 3) continue;
+        var key = cleanedSubject.toLowerCase();
+        if (!seen[key]) {
+            seen[key] = true;
+            cleaned.push(cleanedSubject);
+        }
+    }
+
+    var final = [];
+    for (var j = 0; j < cleaned.length; j++) {
+        var current = cleaned[j].toLowerCase();
+        var isDominated = false;
+
+        for (var k = 0; k < cleaned.length; k++) {
+            if (j !== k) {
+                var other = cleaned[k].toLowerCase();
+                if (other.length > current.length && other.indexOf(current) !== -1) {
+                    isDominated = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isDominated) {
+            final.push(cleaned[j]);
+        }
+    }
+
+    final.sort(function(a, b) {
+        return a.length - b.length;
+    });
+
+    return final;
 }
 
 function getSourceLink(sourceName) {
