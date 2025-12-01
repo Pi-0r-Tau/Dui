@@ -29,6 +29,8 @@ var ExportManager = (function () {
         'LCC Number',
         'Publisher',
         'Publish Date',
+        // TASK 003: Subjects export to CSV, if there is not a DDC number these are often helpful for classification
+        'Subjects',
         'Lookup Date'
     ];
 
@@ -45,6 +47,7 @@ var ExportManager = (function () {
             escapeCSVField(item.lccNumber),
             escapeCSVField(item.publisher),
             escapeCSVField(item.publishDate),
+            escapeCSVField(item.subjects ? item.subjects.join('; ') : ''),
             escapeCSVField(item.timestamp ? new Date(item.timestamp).toISOString() : '')
         ];
         csvContent += row.join(',') + '\n';
