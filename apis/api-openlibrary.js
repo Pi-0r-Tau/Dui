@@ -143,21 +143,66 @@ var OpenLibraryAPI = (function () {
 
                     if (searchResponse.ok && searchResponse.data &&
                         searchResponse.data.docs && searchResponse.data.docs.length > 0) {
+                        // TASK 002: Verify author before accepting Dewey from API results
+                        // So what was happening was Paris Underground  by Etta Shiber (ISBN 9780809472581)
+                        // was being matched to Paris Underground by Mark Overden (ISBN 9780143116394)
+                        // becuase they had the same title, It was searching via the ISBN and title but not validating if the ISBN
+                        // actually matched the author.
+
+                        function normaliseAuthor(name) {
+                            if (!name) return '';
+                            return name.toLowerCase()
+                                .replace(/[^a-z\s]/g, '')
+                                .replace(/\s+/g, ' ')
+                                .trim();
+                        }
+
+                        function authorsMatch(searchAuthors, knownAuthor) {
+                            if (!knownAuthor || !searchAuthors || searchAuthors.length === 0) {
+                                return false;
+                            }
+
+                            var normalisedKnown = normaliseAuthor(knownAuthor);
+
+                            for (var i = 0; i < searchAuthors.length; i++) {
+                                var normalisedSearch = normaliseAuthor(searchAuthors[i]);
+
+                                if (normalisedSearch.indexOf(normalisedKnown) !== -1 ||
+                                    normalisedKnown.indexOf(normalisedSearch) !== -1) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+
                         for (var i = 0; i < searchResponse.data.docs.length; i++) {
                             var doc = searchResponse.data.docs[i];
                             if (doc.ddc && doc.ddc.length > 0) {
-                                result.deweyDecimal = APIBase.formatDewey(doc.ddc[0]);
-                                result.deweySource = SOURCE_NAME;
-                                APIBase.log.success(SOURCE_NAME, 'Found Dewey via search', { dewey: result.deweyDecimal });
+                                // Only use DDC if author matches to avoid wrong book with same title
+                                if (authorsMatch(doc.author_name, result.author)) {
+                                    result.deweyDecimal = APIBase.formatDewey(doc.ddc[0]);
+                                    result.deweySource = SOURCE_NAME;
+                                    APIBase.log.success(SOURCE_NAME, 'Found Dewey via search (author verified)', { dewey: result.deweyDecimal, author: doc.author_name });
                                 break;
+                            } else {
+                                APIBase.log.info(SOURCE_NAME, 'Skipping search result - author mismatch', {
+                                    searchAuthor: doc.author_name,
+                                    expectedAuthor: result.author,
+                                    title: doc.title
+                                });
                             }
                         }
+                    }
+
                         if (!result.lccNumber) {
                             for (var j = 0; j < searchResponse.data.docs.length; j++) {
                                 var doc2 = searchResponse.data.docs[j];
                                 if (doc2.lcc && doc2.lcc.length > 0) {
-                                    result.lccNumber = doc2.lcc[0];
-                                    break;
+                                    // TASK 002: Author for LCC
+                                    if (authorsMatch(doc2.author_name, result.author)) {
+                                        result.lccNumber = doc2.lcc[0];
+                                        break;
+                                    }
                                 }
                             }
                         }
