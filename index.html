@@ -68,7 +68,7 @@
         <details>
           <summary>Help with scanning</summary>
           <div>
-            <p class="govuk-body"><strong>Barcode scanner:</strong> Simply scan the ISBN barcode.  The lookup will start automatically.</p>
+            <p class="govuk-body"><strong>Barcode scanner:</strong> Simply scan the ISBN barcode.  The lookup will start automatically.  You may scan multiple barcodes quickly after one another.</p>
             <p class="govuk-body"><strong>Manual entry:</strong> Type the ISBN number and press Enter or click Search. </p>
           </div>
         </details>
@@ -99,6 +99,15 @@
               Export as JSON
             </button>
           </div>
+        </div>
+
+        <div class="cache-section">
+          <h3 class="govuk-heading-s">Cache</h3>
+          <p class="govuk-hint">Previously searched ISBNs are cached to speed up lookups</p>
+          <p class="govuk-body-s" id="cache-stats">No cached lookups</p>
+          <button id="clear-cache-btn" class="govuk-button govuk-button--secondary" type="button">
+            Clear cache
+          </button>
         </div>
       </section>
 
@@ -142,6 +151,7 @@
   <script src="apis/api-loc.js"></script>
   <script src="apis/api-isbndb.js"></script>
   <script src="settings.js"></script>
+  <script src="cache.js"></script>
   <script src="export.js"></script>
   <script src="lookup.js"></script>
 </body>
