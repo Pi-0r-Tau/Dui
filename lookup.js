@@ -21,10 +21,12 @@ var lastKeyTime = 0;
 var scannerTimeout = null;
 var lookupHistory = [];
 
-var SCANNER_THRESHOLD_MS = 50;
+var SCANNER_THRESHOLD_MS = 50; // ms time between keystrokes to consider as scanner input
 var SCANNER_MIN_LENGTH = 10;
 var HISTORY_STORAGE_KEY = 'isbnLookupHistory';
 var elements = {};
+var lastScannedISBN = '';
+var lastScanTime = 0;
 
 function init() {
     console.log('[INIT] Initialising ISBN to Dewey Decimal Lookup');
@@ -42,7 +44,9 @@ function init() {
         settingsToggle: document.getElementById('settings-toggle'),
         settingsPanel: document.getElementById('settings-panel'),
         apiSettingsList: document.getElementById('api-settings-list'),
-        saveSettingsBtn: document.getElementById('save-settings-btn')
+        saveSettingsBtn: document.getElementById('save-settings-btn'),
+        clearCacheBtn: document.getElementById('clear-cache-btn'),
+        cacheStats: document.getElementById('cache-stats')
     };
 
     // Register available APIs
@@ -57,6 +61,7 @@ function init() {
         renderApiSettings();
         renderHistory();
         testApiConnections();
+        updateCacheStats();
     });
 
     setupEventListeners();
@@ -140,6 +145,16 @@ function setupEventListeners() {
     });
 
     elements.saveSettingsBtn.addEventListener('click', saveSettings);
+
+    // Clear cache button
+    if (elements.clearCacheBtn) {
+        elements.clearCacheBtn.addEventListener('click', function () {
+            if (confirm('Clear the ISBN cache? This will remove all previously cached searches.')) {
+                ISBNCache.clear();
+                updateCacheStats();
+            }
+        });
+    }
 }
 
 function handleKeyDown(e) {
@@ -160,7 +175,21 @@ function handleKeyDown(e) {
         if (elements.isbnInput.value.length >= SCANNER_MIN_LENGTH) {
             var cleanedISBN = cleanISBN(elements.isbnInput.value);
             if (isValidISBN(cleanedISBN)) {
-                performLookup(elements.isbnInput.value);
+                // So if a librarian is scanning multiple books in quick succession, don't want to trigger multiple lookups for the same book
+                // but also want to allow quick scans of different books without the need of manual clearing of the input field each time.
+                // Check if this is a new scan (different ISBN or enough time passed)
+                var now = Date.now();
+                if (cleanedISBN !== lastScannedISBN || (now - lastScanTime) > 1000) {
+                    lastScannedISBN = cleanedISBN;
+                    lastScanTime = now;
+                    performLookup(elements.isbnInput.value);
+                    // Clear input after scan to prepare for next book
+                    setTimeout(function () {
+                        elements.isbnInput.value = '';
+                        inputBuffer = '';
+                        elements.isbnInput.focus();
+                    }, 100);
+                }
             }
         }
         setScannerMode(false);
@@ -246,8 +275,8 @@ function performLookup(rawISBN) {
         return;
     }
 
-    showLoading();
-    elements.searchBtn.disabled = true;
+   // showLoading();
+   //  elements.searchBtn.disabled = true;
 
     var isbn13 = isbn;
     var isbn10 = isbn;
@@ -260,10 +289,31 @@ function performLookup(rawISBN) {
         isbn10 = APIBase.isbn13to10(isbn13) || isbn;
     }
 
+    // Check cache first
+    var cachedResult = ISBNCache.get(isbn13);
+    if (cachedResult) {
+        console.log('[LOOKUP] Found in cache:', cachedResult.title);
+        cachedResult.fromCache = true;
+        displayResult(cachedResult);
+        addToHistory(cachedResult);
+        return;
+    }
+
+    showLoading();
+    elements.searchBtn.disabled = true;
+
     lookupWithAllAPIs(isbn10, isbn13).then(function (result) {
         console.log('[LOOKUP] Lookup complete:', result);
+        result.fromCache = false;
+
+        // Cache the result if found
+        if (result.found) {
+            ISBNCache.set(isbn13, result);
+        }
+
         displayResult(result);
         addToHistory(result);
+        updateCacheStats();
     }).catch(function (error) {
         console.error('[LOOKUP] Lookup failed:', error);
         showError('There was a problem looking up this ISBN. Please try again.');
@@ -375,6 +425,8 @@ function escapeHtml(text) {
 function displayResult(result) {
     var deweyDescription = getDeweyDescription(result.deweyDecimal);
     var html = '';
+    var cacheIndicator = result.fromCache ?
+        '<div class="cache-indicator"><span class="govuk-tag govuk-tag--yellow">From cache</span></div>' : '';
 
     if (!result.found) {
         html = '<div class="govuk-error-summary" role="alert">' +
@@ -383,6 +435,7 @@ function displayResult(result) {
             '</div>';
     } else if (result.deweyDecimal) {
         html = '<div class="govuk-panel govuk-panel--confirmation">' +
+            cacheIndicator +
             '<div class="result-dewey-number">' + result.deweyDecimal + '</div>' +
             (deweyDescription ? '<div class="result-classification">' + deweyDescription + '</div>' : '') +
             '<div class="result-source">Source: ' + escapeHtml(result.deweySource) + '</div>' +
@@ -392,6 +445,7 @@ function displayResult(result) {
         html = '<div class="govuk-warning-text">' +
             '<span class="govuk-warning-text__icon">! </span>' +
             '<div>' +
+            cacheIndicator +
             '<strong>No Dewey Decimal Classification found</strong>' +
             '<p class="govuk-body">This book was found but does not have a Dewey Decimal Classification. </p>' +
             (result.lccNumber ? '<p class="govuk-body">LCC: <strong>' + escapeHtml(result.lccNumber) + '</strong></p>' : '') +
@@ -783,6 +837,18 @@ function saveSettings() {
     }).catch(function (err) {
         alert('Failed to save settings: ' + err.message);
     });
+}
+
+function updateCacheStats() {
+    if (!elements.cacheStats) return;
+
+    var stats = ISBNCache.getStats();
+    if (stats.totalEntries === 0) {
+        elements.cacheStats.textContent = 'No cached lookups';
+    } else {
+        elements.cacheStats.textContent = stats.totalEntries + ' ISBN' +
+            (stats.totalEntries === 1 ? '' : 's') + ' cached';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);
