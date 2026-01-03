@@ -724,6 +724,31 @@ body {
   margin-bottom: 15px;
 }
 
+/* Cache Indicator */
+.cache-indicator {
+  margin-bottom: 15px;
+}
+
+.cache-indicator .govuk-tag {
+  font-size: 14px;
+}
+
+/* Cache Section */
+.cache-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--govuk-grey-3);
+}
+
+.cache-section .govuk-heading-s {
+  margin-bottom: 10px;
+}
+
+#cache-stats {
+  color: var(--govuk-grey-1);
+  margin-bottom: 10px;
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
