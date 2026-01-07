@@ -432,6 +432,7 @@ function displayResult(result) {
         html = '<div class="govuk-error-summary" role="alert">' +
             '<h2 class="govuk-error-summary__title">Book not found</h2>' +
             '<p class="govuk-body">No book was found for ISBN: <strong>' + escapeHtml(result.isbn) + '</strong></p>' +
+            buildExternalSearchLinks(result.isbn13 || result.isbn) +
             '</div>';
     } else if (result.deweyDecimal) {
         html = '<div class="govuk-panel govuk-panel--confirmation">' +
@@ -449,12 +450,51 @@ function displayResult(result) {
             '<strong>No Dewey Decimal Classification found</strong>' +
             '<p class="govuk-body">This book was found but does not have a Dewey Decimal Classification. </p>' +
             (result.lccNumber ? '<p class="govuk-body">LCC: <strong>' + escapeHtml(result.lccNumber) + '</strong></p>' : '') +
+            buildExternalSearchLinks(result.isbn13 || result.isbn) +
             '</div>' +
             '</div>' +
             buildBookDetailsHtml(result);
     }
 
     elements.resultsSection.innerHTML = html;
+}
+
+// If DDC is not found, provide links to external book search sites. These do not have API access so just direct links.
+function buildExternalSearchLinks(isbn) {
+    var sites = [
+        {
+            name: "Blackwell's",
+            url: 'https://blackwells.co.uk/bookshop/product/' + isbn,
+            description: 'UK academic bookshop'
+        },
+        {
+            name: 'Browns Books',
+            url: 'https://www.brownsbfs.co.uk/product/' + isbn,
+            description: 'UK schools/libraries'
+        },
+        {
+            name: 'WorldCat',
+            url: 'https://www.worldcat.org/isbn/' + isbn,
+            description: 'Global library catalog'
+        }
+    ];
+
+    var html = '<div class="external-search-links">' +
+        '<p class="govuk-body-s" style="margin-top: 15px; margin-bottom: 10px;">' +
+        '<strong>Try searching these sites for DDC:</strong>' +
+        '</p>' +
+        '<div class="govuk-button-group">';
+
+    for (var i = 0; i < sites.length; i++) {
+        html += '<a href="' + sites[i].url + '" target="_blank" rel="noopener" ' +
+            'class="govuk-button govuk-button--secondary external-search-btn" ' +
+            'title="' + escapeHtml(sites[i].description) + '">' +
+            escapeHtml(sites[i].name) +
+            '</a>';
+    }
+
+    html += '</div></div>';
+    return html;
 }
 
 function buildBookDetailsHtml(result) {

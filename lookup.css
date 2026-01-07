@@ -918,6 +918,31 @@ body {
     margin-bottom: 0;
 }
 
-.subjects-dropdown .govuk-list li {
-    margin-bottom: 5px;
+/* External Search Links */
+.external-search-links {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--govuk-grey-3);
+}
+
+.external-search-links .govuk-button-group {
+  margin-top: 10px;
+  gap: 8px;
+}
+
+.external-search-btn {
+  font-size: 16px;
+  padding: 6px 12px;
+}
+
+.external-search-btn:hover {
+  background-color: var(--govuk-grey-3);
+}
+
+.govuk-warning-text .external-search-links {
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+.govuk-error-summary .external-search-links {
+  border-top-color: rgba(0, 0, 0, 0.1);
 }
