@@ -275,8 +275,8 @@ function performLookup(rawISBN) {
         return;
     }
 
-   // showLoading();
-   //  elements.searchBtn.disabled = true;
+    // showLoading();
+    //  elements.searchBtn.disabled = true;
 
     var isbn13 = isbn;
     var isbn10 = isbn;
@@ -534,8 +534,10 @@ function buildBookDetailsHtml(result) {
     if (result.sources && result.sources.length > 0) {
         html += '<div class="sources-list">' +
             '<span class="sources-label">Data from:</span> ' +
-            result.sources.map(function(s) {
-                return getSourceLink(s);
+            result.sources.map(function (s) {
+                // TASK 005: Source links to take user to book page on source site
+                // setup for core implementation of source links
+                return getSourceLink(s, result.isbn13);
             }).join(' ') +
             '</div>';
     }
@@ -590,19 +592,22 @@ function cleanSubjects(subjects) {
         }
     }
 
-    final.sort(function(a, b) {
+    final.sort(function (a, b) {
         return a.length - b.length;
     });
 
     return final;
 }
-
-function getSourceLink(sourceName) {
+// TASK 005: Source links to take user to book page on source site
+// So when a user searches for a book via the ISBN 9780813219028 (Tradition and the Rule of Faith in the Early Church)
+// then the source url is the sources with the ISBN embedded in the link
+// This means the user can quickly navigate to the source site for more information about the book
+function getSourceLink(sourceName, isbn13) {
     var sourceLinks = {
-        'Open Library': 'https://openlibrary.org',
-        'Google Books': 'https://books.google.com',
-        'Library of Congress': 'https://www.loc.gov',
-        'ISBNdb': 'https://isbndb.com'
+        'Open Library': 'https://openlibrary.org/isbn/' + isbn13,
+        'Google Books': 'https://www.google.com/search?tbm=bks&q=isbn:' + isbn13,
+        'Library of Congress': 'https://www.loc.gov/books/?q=' + isbn13,
+        'ISBNdb': 'https://isbndb.com/book/' + isbn13
     };
 
     var url = sourceLinks[sourceName] || '#';
