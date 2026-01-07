@@ -1,13 +1,9 @@
 # Dui
 
 ## ISBN to Dewey Decimal Classification
+Dui is a web-based tool for librarians to quickly look up Dewey Decimal Classification (DDC) numbers from ISBN barcodes or manual entry.
 
-A web-based tool for librarians to quickly look up Dewey Decimal Classification (DDC) numbers from ISBN barcodes or manual entry.
-
-
-## What is this?
-
-This tool allows librarians to:
+## Dui allows librarians to:
 
 - Scan ISBN barcodes using a barcode scanner
 - Manually enter ISBNs (10 or 13 digit)
