@@ -7,10 +7,10 @@ var GoogleBooksAPI = (function () {
         return {
             id: 'googlebooks',
             name: SOURCE_NAME,
-            description: 'Google\'s book database. Good for book details but rarely has Dewey classifications.',
+            description: 'Google\'s book database. Good for book details and metadata..',
             requiresKey: REQUIRES_KEY,
             keyOptional: true,
-            keyDescription: 'Optional. Increases rate limits from 100 to 1000 requests per day.',
+            keyDescription: 'Optional. Increases rate limits from 100 to 1000 requests per day.', // Do need to clarify limits here at some point
             website: 'https://console.cloud.google.com/apis/library/books.googleapis.com',
             enabled: true
         };
