@@ -605,7 +605,8 @@ function cleanSubjects(subjects) {
 function getSourceLink(sourceName, isbn13) {
     var sourceLinks = {
         'Open Library': 'https://openlibrary.org/isbn/' + isbn13,
-        'Google Books': 'https://www.google.com/search?tbm=bks&q=isbn:' + isbn13,
+        // Google Books was being annoying, Google  books just uses Google search. SoI do the same, for now.
+        'Google Books': 'https://www.google.com/search?q=' + isbn13 + '+book',
         'Library of Congress': 'https://www.loc.gov/books/?q=' + isbn13,
         'ISBNdb': 'https://isbndb.com/book/' + isbn13
     };
