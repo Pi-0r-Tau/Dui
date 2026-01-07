@@ -10,6 +10,14 @@ Dui is a web-based tool for librarians to quickly look up Dewey Decimal Classifi
 - Retrieve Dewey Decimal numbers from multiple library databases
 - Export lookup history as CSV or JSON files
 
+## What if Dui cannot find Dewey Decimal Numbers for a ISBN?
+
+If Dui cannot return a DDC number for a typed or scanned in ISBN, it shall provide quick links for the ISBN in question to:
+
+- Blackwell's
+- Browns Books
+- WorldCat
+
 ## APIs used:
 
 - Open Library
@@ -20,14 +28,6 @@ Dui is a web-based tool for librarians to quickly look up Dewey Decimal Classifi
 ## Optional API:
 
 - ISBNdb (API key required)
-
-## What if Dui cannot find Dewey Decimal Numbers for a ISBN?
-
-If Dui cannot return a DDC number for a typed or scanned in ISBN, it shall provide quick links for the ISBN in question to:
-
-- Blackwell's
-- Browns Books
-- WorldCat
 
 ## Export Options
 - CSV
