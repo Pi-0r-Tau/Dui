@@ -33,6 +33,9 @@ If Dui cannot return a DDC number for a typed or scanned in ISBN, it shall provi
 - CSV
 - JSON
 
+# Upcoming updates:
+- Local lookup from [BFS Dewey_JSON Data](https://github.com/Pi-0r-Tau/BFS_Dewey_JSON_Data) for the last 10 years of published books in English, 000 - 800.999 DDC
+
 ## Data Privacy
 
 - All data is stored locally in browser (localStorage)
