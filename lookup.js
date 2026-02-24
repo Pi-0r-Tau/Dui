@@ -729,9 +729,21 @@ function addToHistory(result) {
     updateExportButtons();
 }
 
+/**
+ * Title: WCAG 1.3.1: Ensure elements with an ARIA role that require child roles contain them (#history-list)
+ * Tags: Accessibility, WCAG 1.3.1, aria-required-children
+ * Issue: Ensure elements with an ARIA role that require child roles contain them (aria-required-children)
+ * Element path: #history-list
+ * <div class="history-list" id="history-list" role="list">
+ * (axe-core 4.10.2)
+ * @description So to fix this WCAG 1.3.1 issue changing:
+ * <div class="history-list" id="history-list" role="list">
+ * to:
+ * <li class="history-list" id="history-list" role="list">
+ */
 function renderHistory() {
     if (lookupHistory.length === 0) {
-        elements.historyList.innerHTML = '<p class="govuk-body empty-history">No recent lookups</p>';
+        elements.historyList.innerHTML = '<li class="govuk-body empty-history" role="listitem">No recent lookups</li>';
         elements.clearHistoryBtn.style.display = 'none';
         updateExportButtons();
         return;
@@ -745,7 +757,7 @@ function renderHistory() {
         var title = item.title || '';
         var displayTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
 
-        html += '<div class="history-item" data-isbn="' + item.isbn + '" tabindex="0">' +
+        html += '<li class="history-item" data-isbn="' + item.isbn + '" tabindex="0" role="listitem">' +
             '<div>' +
             '<span class="history-isbn">' + (item.isbn13 || item.isbn) + '</span>' +
             '<span class="history-title">' + escapeHtml(displayTitle) + '</span>' +
@@ -753,11 +765,11 @@ function renderHistory() {
             '<span class="history-dewey ' + (item.deweyDecimal ? '' : 'none') + '">' +
             (item.deweyDecimal || 'No DDC') +
             '</span>' +
-            '</div>';
+            '</li>';
     }
 
     if (lookupHistory.length > 20) {
-        html += '<p class="govuk-body" style="margin-top: 15px; color: #505a5f;">Showing 20 of ' + lookupHistory.length + ' records</p>';
+        html += '<li role="listitem" style="margin-top: 15px; color: #505a5f;">Showing 20 of ' + lookupHistory.length + ' records</li>';
     }
 
     elements.historyList.innerHTML = html;
