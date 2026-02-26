@@ -674,7 +674,7 @@ body {
 }
 
 .api-status.disconnected {
-  background: #f6d7d2;
+  background: #ffffff;
   color: var(--govuk-red);
 }
 
