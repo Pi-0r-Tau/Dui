@@ -756,8 +756,8 @@ function renderHistory() {
         var item = lookupHistory[i];
         var title = item.title || '';
         var displayTitle = title.length > 40 ? title.substring(0, 40) + '...' : title;
-
-        html += '<li class="history-item" data-isbn="' + item.isbn + '" tabindex="0" role="listitem">' +
+        // html for (ST011)
+        html += '<li class="history-item" data-isbn="' + item.isbn + '" data-isbn-13="' + (item.isbn13 || item.isbn) + '" tabindex="0" role="listitem">' +
             '<div>' +
             '<span class="history-isbn">' + (item.isbn13 || item.isbn) + '</span>' +
             '<span class="history-title">' + escapeHtml(displayTitle) + '</span>' +
@@ -773,19 +773,27 @@ function renderHistory() {
     }
 
     elements.historyList.innerHTML = html;
-
+    // ISBN Stripping on History Item click (ST011)
+    // 
+    // When clickin on a record from the recent lookups, the ISBN-13 was being stripped dowm:
+    // So for example 9781399822381 was being stripped down to 1399822381 which then caused the lookup to fail as it was not a valid ISBN-10 or ISBN-13.
+    // 
+    // Store of both isbn and isbn13 as data attributes on the history item element, when history is clicked preferentially use the isbn-13 for lookup but fall back to isbn if isbn-13 is not available. 
+    // This ensures that when a user clicks on a history item, the correct ISBN format is used for the lookup, preventing the stripping issue and ensuring successful lookups from history.
     var historyItems = document.querySelectorAll('.history-item');
     historyItems.forEach(function (historyItem) {
         historyItem.addEventListener('click', function () {
             var isbn = this.getAttribute('data-isbn');
-            elements.isbnInput.value = isbn;
-            performLookup(isbn);
+            var displayISBN = this.getAttribute('data-isbn-13') || isbn;
+            elements.isbnInput.value = displayISBN;
+            performLookup(displayISBN);
         });
         historyItem.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 var isbn = this.getAttribute('data-isbn');
-                elements.isbnInput.value = isbn;
-                performLookup(isbn);
+                var displayISBN = this.getAttribute('data-isbn-13') || isbn;
+                elements.isbnInput.value = displayISBN;
+                performLookup(displayISBN);
             }
         });
     });
